@@ -12,11 +12,11 @@ class ILPSolver(SolverBase):
 
     def solve(self):
         # 1. Initialize the Model
-        # We want to Minimize processing costs [cite: 139]
+        # We want to Minimize processing costs
         prob = pulp.LpProblem("Data_Allocation_Optimization", pulp.LpMinimize)
 
         # 2. Define Decision Variables
-        # A_pn: 1 if partition p is assigned to node n, else 0 [cite: 170]
+        # A_pn: 1 if partition p is assigned to node n, else 0
         # Note: We do NOT need slack variables (S_in) for classical ILP
         A = pulp.LpVariable.dicts("Assign",
                                   ((p, n) for p in self.partitions for n in self.nodes),
@@ -24,7 +24,7 @@ class ILPSolver(SolverBase):
 
         # 3. Define Objective Function
         # Minimize: sum(r_pn * c_p * (1 - A_pn))
-        # This represents the cost of fetching data remotely [cite: 190, 192]
+        # This represents the cost of fetching data remotely
         total_cost = []
         for p in self.partitions:
             for n in self.nodes:
@@ -35,12 +35,12 @@ class ILPSolver(SolverBase):
         prob += pulp.lpSum(total_cost)
 
         # 4. Constraint: k-Safety
-        # Each partition must be stored on exactly k nodes [cite: 123, 173]
+        # Each partition must be stored on exactly k nodes
         for p in self.partitions:
             prob += pulp.lpSum([A[p, n] for n in self.nodes]) == self.k_safety, f"Safety_{p}"
 
         # 5. Constraint: Storage Capacity
-        # The sum of partition sizes on a node must not exceed its capacity [cite: 124, 158]
+        # The sum of partition sizes on a node must not exceed its capacity
         # ILP handles inequalities (<=) natively, unlike QUBO
         for n, capacity in self.nodes.items():
             prob += pulp.lpSum([A[p, n] * self.partitions[p] for p in self.partitions]) <= capacity, f"Capacity_{n}"

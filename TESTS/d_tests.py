@@ -22,3 +22,10 @@ def test1():
     }
 
     return nodes, partitions, k_safety, requests, comm_costs
+
+# Do a test where comm costs are constant among one cluster and x100 between clusters
+# Hot Regions: 80% of requests go to 20% of the data
+# Start with two clusters, distribute requests equally
+# Can start simple with equal request probability for everyone
+# Second set is with a region affinity (partition affinity)
+    # Montreal girls love montreal stuff more than toronto stuff but sometimeeesss they want toronto stuff
